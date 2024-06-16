@@ -35,6 +35,6 @@ grosor = 16
 dibujar_Cuarto(canvas, x1, y1, x2, y2,grosor)
 x1, y1 = 125, 50
 dibujar_Ventana(canvas,x1,y1,80)
-# x1, y1 = 250, 120
-# dibujar_Puerta(canvas,x1,y1,70)
+x1, y1 = 250, 120
+dibujar_Puerta(canvas,x1,y1,70)
 root.mainloop()
