@@ -10,6 +10,7 @@ class VistaCuartos(tk.Tk):
 
         self.canvas = tk.Canvas(self, bg="white")
         self.canvas.pack(fill=tk.BOTH, expand=True)
+        self.canvas.bind("<Button-1>", self.capturar_click)  # Captura el clic en el canvas
 
         # Crear labels y entries para el ancho y alto
         self.label_ancho = tk.Label(self, text="Ancho del cuarto (px):")
@@ -43,6 +44,10 @@ class VistaCuartos(tk.Tk):
             messagebox.showerror("Error", "Por favor ingresa valores numéricos positivos para las dimensiones.")
             return None, None
 
+    def capturar_click(self, event):
+        x, y = event.x, event.y
+        self.controlador.procesar_click(x, y)
+
     def dibujar_pared(self, x1, y1, x2, y2):
         self.canvas.create_rectangle(x1, y1, x2, y2, fill="#6F4E37", outline="")
 
@@ -60,8 +65,24 @@ class VistaCuartos(tk.Tk):
     def dibujar_puerta(self, x1, y1, longitud):
         # Dibuja la puerta como un rectángulo
         self.canvas.create_rectangle(x1, y1, x1 + 16, y1 + longitud, fill="white", outline="black")
-        # arco de la puerta como aleta de tiburón
+        # Dibuja el arco de la puerta como una "aleta de tiburón"
         self.canvas.create_arc(x1 - longitud, y1, x1 + longitud, y1 + 2 * longitud, start=0, extent=90, style=tk.ARC, outline="black")
+
+    def dibujar_cama(self, x1, y1):
+        # Dibuja la cama
+        self.canvas.create_rectangle(x1, y1, x1 + 50, y1 + 80, fill="white", outline="black")  # Cuerpo de la cama
+        self.canvas.create_rectangle(x1 + 10, y1, x1 + 40, y1 + 20, fill="lightgray", outline="black")  # Almohadas
+
+    def dibujar_sofa(self, x1, y1):
+        # Dibuja el sofá
+        self.canvas.create_rectangle(x1, y1, x1 + 60, y1 + 20, fill="maroon", outline="black")  # Parte superior
+        self.canvas.create_rectangle(x1, y1 + 80, x1 + 60, y1 + 100, fill="maroon", outline="black")  # Parte inferior
+        self.canvas.create_rectangle(x1, y1 + 20, x1 + 20, y1 + 80, fill="maroon", outline="black")  # Parte izquierda
+        self.canvas.create_rectangle(x1 + 40, y1 + 20, x1 + 60, y1 + 80, fill="maroon", outline="black")  # Parte derecha
+        self.canvas.create_rectangle(x1 + 20, y1 + 20, x1 + 40, y1 + 80, fill="maroon", outline="black")  # Parte central
+
+    def solicitar_posicion(self, coordenada):
+        return simpledialog.askinteger(f"Posición en {coordenada}", f"Ingrese la posición en {coordenada}:")
 
     def mostrar_cuarto(self, cuartos):
         self.canvas.delete("all")
@@ -101,3 +122,6 @@ class VistaCuartos(tk.Tk):
 
     def solicitar_id_cuarto_para_eliminar(self):
         return simpledialog.askinteger("Eliminar Cuarto", "Ingrese el ID del cuarto que desea eliminar:")
+
+    def solicitar_tipo_mueble(self):
+        return simpledialog.askstring("Tipo de Mueble", "Ingrese el tipo de mueble a agregar (Cama/Sofá):")
