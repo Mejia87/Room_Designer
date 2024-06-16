@@ -1,6 +1,7 @@
 from tkinter import messagebox
 from vista.vista_cuartos import VistaCuartos
 from modelo.cuarto import Cuarto
+from modelo.elemento import Elemento
 
 class Controlador:
     def __init__(self):
@@ -13,45 +14,72 @@ class Controlador:
             return
 
         nombre = "Cuarto " + str(len(self.cuartos) + 1)
-        nuevo_cuarto = Cuarto(nombre, ancho, alto)
-        self.cuartos.append(nuevo_cuarto)
+        cuarto = Cuarto(nombre, ancho, alto)
+        self.cuartos.append(cuarto)
         self.vista.mostrar_cuarto(self.cuartos)
 
     def agregar_elemento(self):
-        if not self.cuartos:
-            messagebox.showerror("Error", "Primero agrega un cuarto")
-            return
-
-        tipo_elemento = self.vista.solicitar_tipo_elemento()
-        if tipo_elemento is None:
-            return
-
         id_cuarto = self.vista.solicitar_id_cuarto()
-        if id_cuarto is None or id_cuarto < 1 or id_cuarto > len(self.cuartos):
-            messagebox.showerror("Error", "ID de cuarto no válido")
+        tipo_elemento = self.vista.solicitar_tipo_elemento()
+
+        if id_cuarto is None or tipo_elemento not in ["Ventana", "Puerta"]:
+            messagebox.showerror("Error", "ID de cuarto o tipo de elemento no válido.")
             return
 
-        cuarto = self.cuartos[id_cuarto - 1]
-        if tipo_elemento == "Ventana":
-            # Ventana en la pared superior del cuarto
-            cuarto.agregar_elemento(tipo_elemento, (cuarto.ancho - 80) // 2, 0)
-        elif tipo_elemento == "Puerta":
-            # Puerta en la pared inferior del cuarto
-            cuarto.agregar_elemento(tipo_elemento, (cuarto.ancho - 70) // 2, cuarto.alto - 16)
+        cuarto = self.obtener_cuarto_por_id(id_cuarto)
+        if cuarto is None:
+            messagebox.showerror("Error", "Cuarto no encontrado.")
+            return
+
+        x = self.vista.solicitar_posicion("X")
+        y = 0  # elementos en la pared superior
+
+        if x is None:
+            messagebox.showerror("Error", "Posiciones no válidas.")
+            return
+
+        cuarto.agregar_elemento(tipo_elemento, x, y)
         self.vista.mostrar_cuarto(self.cuartos)
 
     def eliminar_cuarto(self):
-        if not self.cuartos:
-            messagebox.showerror("Error", "No hay cuartos para eliminar")
-            return
-
         id_cuarto = self.vista.solicitar_id_cuarto_para_eliminar()
-        if id_cuarto is None or id_cuarto < 1 or id_cuarto > len(self.cuartos):
-            messagebox.showerror("Error", "ID de cuarto no válido")
+
+        if id_cuarto is None:
+            messagebox.showerror("Error", "ID de cuarto no válido.")
             return
 
-        del self.cuartos[id_cuarto - 1]
+        cuarto = self.obtener_cuarto_por_id(id_cuarto)
+        if cuarto is None:
+            messagebox.showerror("Error", "Cuarto no encontrado.")
+            return
+
+        self.cuartos.remove(cuarto)
         self.vista.mostrar_cuarto(self.cuartos)
+
+    def obtener_cuarto_por_id(self, id_cuarto):
+        if id_cuarto < 1 or id_cuarto > len(self.cuartos):
+            return None
+        return self.cuartos[id_cuarto - 1]
+
+    def procesar_click(self, x, y):
+        id_cuarto = self.vista.solicitar_id_cuarto()
+        if id_cuarto is None:
+            return
+
+        cuarto = self.obtener_cuarto_por_id(id_cuarto)
+        if cuarto is None:
+            messagebox.showerror("Error", "Cuarto no encontrado.")
+            return
+
+        tipo_mueble = self.vista.solicitar_tipo_mueble()
+        if tipo_mueble not in ["Cama", "Sofá"]:
+            messagebox.showerror("Error", "Tipo de mueble no válido.")
+            return
+
+        if tipo_mueble == "Cama":
+            self.vista.dibujar_cama(x, y)
+        elif tipo_mueble == "Sofá":
+            self.vista.dibujar_sofa(x, y)
 
     def ejecutar(self):
         self.vista.mainloop()
