@@ -9,7 +9,7 @@ puerta_count = 0
 def dibujar_pared(canvas, x1, y1, x2, y2, tag):
     return canvas.create_rectangle(x1, y1, x2, y2, fill="#6F4E37", outline="", tags=tag)
 
-def dibujar_Cuarto(canvas, x1, y1, x2, y2, grosor, tag, text):
+def dibujar_Dormitorio(canvas, x1, y1, x2, y2, grosor, tag, text):
     cuarto_id = canvas.create_rectangle(x1, y1, x2, y2, fill="#F6FAB9", outline="", tags=tag)
     canvas.create_rectangle(x1, y1, x2, y1 + grosor, fill="#6F4E37", outline="", tags=tag)
     canvas.create_rectangle(x1, y1, x1 + grosor, y2, fill="#6F4E37", outline="", tags=tag)
@@ -36,7 +36,7 @@ def dibujar_Puerta(canvas, x1, y1, longitud, tag, text):
 def handle_selection(event):
     global selected_structure
     selected_structure = combo_box.get()
-    label.config(text=f"Seleccionado: {selected_structure}")
+    
     canvas.focus_set()  # Cambiar el enfoque al lienzo después de seleccionar una estructura
 
 # Función para dibujar con el clic derecho del ratón en el lienzo
@@ -57,7 +57,7 @@ def on_canvas_click(event):
         text = f"cuarto{cuarto_count}"
         x2, y2 = x1 + 200, y1 + 200
         grosor = 16
-        current_item = dibujar_Cuarto(canvas, x1, y1, x2, y2, grosor, tag, text)
+        current_item = dibujar_Dormitorio(canvas, x1, y1, x2, y2, grosor, tag, text)
 
 # Funciones para mover las estructuras
 def start_move(event):
@@ -70,6 +70,7 @@ def start_move(event):
             current_item = tags[0]
         start_x = event.x
         start_y = event.y
+        label.config(text=f"Seleccionado: {current_item}")
         canvas.tag_raise(current_item)
 
 def move(event):
@@ -83,14 +84,15 @@ def move(event):
 
 def stop_move(event):
     global current_item
-    current_item = None
+    
 
 # Función para eliminar la estructura seleccionada
 def delete_structure():
     global current_item
+    label.config(text=f"se elimino: {current_item}")
     if current_item:
         canvas.delete(current_item)
-        print('se elimino', current_item)
+        label.config(text=f"se elimino: {current_item}")
         current_item = None
 
 # Crear la ventana principal
@@ -103,9 +105,9 @@ canvas.pack()
 
 # Dibujar un cuarto inicial
 x1, y1 = 50, 50
-x2, y2 = 250, 250
+x2, y2 = 250, 300
 grosor = 16
-current_item = dibujar_Cuarto(canvas, x1, y1, x2, y2, grosor, "initial_room", "cuarto0")
+current_item = dibujar_Dormitorio(canvas, x1, y1, x2, y2, grosor, "initial_room", "cuarto0")
 
 # Crear el componente de selección
 label = tk.Label(root, text="Selecciona una estructura")
@@ -140,3 +142,4 @@ canvas.bind("<ButtonRelease-1>", stop_move)
 
 # Ejecutar la aplicación
 root.mainloop()
+
