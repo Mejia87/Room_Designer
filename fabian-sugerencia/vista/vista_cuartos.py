@@ -10,9 +10,9 @@ class VistaCuartos(tk.Tk):
 
         self.canvas = tk.Canvas(self, bg="white")
         self.canvas.pack(fill=tk.BOTH, expand=True)
-        self.canvas.bind("<Button-1>", self.capturar_click)  # Captura el clic en el canvas
+        self.canvas.bind("<Button-1>", self.capturar_click)  # Captura el click en el canvas
 
-        # Crear labels y entries para el ancho y alto
+        #labels y entries para el ancho y alto
         self.label_ancho = tk.Label(self, text="Ancho del cuarto (px):")
         self.label_ancho.pack()
         self.entry_ancho = tk.Entry(self)
@@ -23,7 +23,7 @@ class VistaCuartos(tk.Tk):
         self.entry_alto = tk.Entry(self)
         self.entry_alto.pack()
 
-        # Botones para agregar y eliminar cuartos y elementos
+        #agregar y eliminar cuartos y elementos
         self.boton_agregar_cuarto = tk.Button(self, text="Agregar Cuarto", command=self.controlador.agregar_cuarto)
         self.boton_agregar_cuarto.pack()
 
@@ -63,18 +63,18 @@ class VistaCuartos(tk.Tk):
         self.canvas.create_line(x1, y1 + 8, x1 + longitud, y1 + 8, fill="black")
 
     def dibujar_puerta(self, x1, y1, longitud):
-        # Dibuja la puerta como un rectángulo
+        #puerta como un rectángulo
         self.canvas.create_rectangle(x1, y1, x1 + 16, y1 + longitud, fill="white", outline="black")
-        # Dibuja el arco de la puerta como una "aleta de tiburón"
+        #aleta de tiburón
         self.canvas.create_arc(x1 - longitud, y1, x1 + longitud, y1 + 2 * longitud, start=0, extent=90, style=tk.ARC, outline="black")
 
     def dibujar_cama(self, x1, y1):
-        # Dibuja la cama
+        #cama
         self.canvas.create_rectangle(x1, y1, x1 + 50, y1 + 80, fill="white", outline="black")  # Cuerpo de la cama
         self.canvas.create_rectangle(x1 + 10, y1, x1 + 40, y1 + 20, fill="lightgray", outline="black")  # Almohadas
 
     def dibujar_sofa(self, x1, y1):
-        # Dibuja el sofá
+        #sofá
         self.canvas.create_rectangle(x1, y1, x1 + 60, y1 + 20, fill="maroon", outline="black")  # Parte superior
         self.canvas.create_rectangle(x1, y1 + 80, x1 + 60, y1 + 100, fill="maroon", outline="black")  # Parte inferior
         self.canvas.create_rectangle(x1, y1 + 20, x1 + 20, y1 + 80, fill="maroon", outline="black")  # Parte izquierda
