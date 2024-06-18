@@ -35,6 +35,15 @@ class Elemento:
             self.canvas.create_text(x1 + 15, y1 + i * 10, text=char, tags=(text, cuarto_id), fill='red')
     
     
+    
+    def dibujar_Ventana_Vertical(self, x1, y1, longitud, text, cuarto_id):
+        self.canvas.create_rectangle(x1, y1, x1 + 10, y1 + longitud, fill="#EEEEEE", tags=(text, cuarto_id))
+        self.canvas.create_line(x1+4, y1, x1 + 4, y1 + longitud, fill="black", tags=(text, cuarto_id))
+        y1 -= 5
+        for i, char in enumerate(text):
+            self.canvas.create_text(x1 + 15, y1 + i * 10, text=char, tags=(text, cuarto_id), fill='red')
+    
+    
     def dibujar_Puerta(self, x1, y1, longitud, text, cuarto_id):
         self.canvas.create_rectangle(x1, y1, x1 + 10, y1 + longitud, fill="#A7E6FF", tags=(text, cuarto_id))
         self.canvas.create_line(x1 - longitud, y1 + longitud, x1, y1 + longitud, width="2", tags=(text, cuarto_id))
