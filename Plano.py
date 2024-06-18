@@ -307,10 +307,12 @@ class VentanaPrincipal:
                 x1, y1, x2, y2 = self.estructura.cuartos[cuarto_id]
                 pos_x, pos_y = x1 + 20, y1 + 20
                 self.mueble.dibujar_mueble(tipo, pos_x, pos_y)
-        elif action == "eliminar" and len(parts) == 2:
+        elif action == "eliminar" and len(parts) == 3:
             nombre = parts[1]
-            self.canvas.delete(nombre)
-            self.label.config(text=f"Se eliminó: {nombre}")
+            tipo = parts[2]
+            et =  f"{nombre} {tipo}"
+            self.canvas.delete(et)
+            self.label.config(text=f"Se eliminó: {et}")
         elif action == "mover":
             self.label.config(text="Funcionalidad de mover no implementada.")
         else:
