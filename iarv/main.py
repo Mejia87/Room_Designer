@@ -20,9 +20,9 @@ from RV.conversor import convertidor
 
 
 def main():
-    texto = reconocer_voz()
-    print(f"Se reconocío : {texto}")
-    print("grabacion finalizada")
+   texto = reconocer_voz()
+   print(f"Se reconocío : {texto}")
+#    print("grabacion finalizada")
 
 
 

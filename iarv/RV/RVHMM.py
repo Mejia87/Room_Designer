@@ -16,7 +16,7 @@ def __entrenarModelo_dict(csv):
     return hmmc
 
 
-def reconocer_voz(duracion=5, trhhold=20):
+def reconocer_voz(duracion=5, trhhold=20): 
     modelo = __entrenarModelo_dict(CSV)
 
     #  Pre Procesamiento
