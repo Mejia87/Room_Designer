@@ -358,12 +358,19 @@ class VentanaPrincipal:
                     self.elemento.dibujar_Puerta(x1 + 20, y1 + 50, 60, text, cuarto_id)
             elif tipo in ["cama", "sofa", "lampara", "mesa", "silla", "inodoro", "horno"]:
                 self.crear_mueble_comando(tipo, nombre)
-        elif action == "eliminar" and len(parts) == 3:
-            nombre = parts[1]
-            tipo = parts[2]
-            et = f"{nombre} {tipo}"
+        elif action == "eliminar":
+            if len(parts) == 3:
+                nombre = parts[1]
+                tipo = parts[2]
+                et = f"{nombre} {tipo}"
+            elif len(parts) == 2:
+                et = parts[1]
+            else:
+                self.label.config(text=f"Comando no reconocido: {' '.join(parts)}")
+                return
             self.canvas.delete(et)
             self.label.config(text=f"Se eliminó: {et}")
+
         elif action == "mover":
             self.label.config(text="Funcionalidad de mover no implementada.")
         else:
