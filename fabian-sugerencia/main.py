@@ -14,13 +14,14 @@ class VentanaPrincipal:
         self.estructura = EstructuraModule.Estructura(self.canvas)
         self.elemento = ElementoModule.Elemento(self.canvas)
         self.mueble = MuebleModule.Mueble(self.canvas)
+        self.mueble.estructura = self.estructura
         
         self.label = tk.Label(root, text="Selecciona una estructura")
         self.label.pack(pady=10)
         self.control_frame = tk.Frame(root)
         self.control_frame.pack(pady=10)
 
-        opciones = ["cuarto", "ventana", "puerta"]
+        opciones = ["cuarto", "ventana", "ventana vertical", "puerta", "puerta vertical"]
         self.seleccion = tk.StringVar()
 
         self.combo_box = ttk.Combobox(self.control_frame, textvariable=self.seleccion)
@@ -28,7 +29,7 @@ class VentanaPrincipal:
         self.combo_box.pack(side=tk.LEFT, padx=5)
         self.combo_box.bind("<<ComboboxSelected>>", self.handle_selection)
 
-        mueble_combobox = ttk.Combobox(self.control_frame, values=["cama", "sofa", "lampara", "mesa", "silla", "inodoro", "horno"])
+        mueble_combobox = ttk.Combobox(self.control_frame, values=["cama", "sofa","lampara","mesa","silla","inodoro","horno"])
         mueble_combobox.pack(side=tk.LEFT, padx=5)
         mueble_combobox.bind("<<ComboboxSelected>>", lambda event: self.crear_mueble(mueble_combobox.get()))
         
@@ -66,22 +67,7 @@ class VentanaPrincipal:
         x2, y2 = 460, 260
         grosor = 10
         self.estructura.dibujar_Cuarto(x1, y1, x2, y2, grosor, "cuarto0")
-    def delete_structure(self):
-     if self.current_item:
-        # Eliminar desde la estructura
-        if self.current_item in self.estructura.cuartos:
-            del self.estructura.cuartos[self.current_item]
-        # Eliminar desde los elementos
-        elif self.current_item in self.elemento.elementos:
-            del self.elemento.elementos[self.current_item]
-        # Eliminar desde los muebles
-        elif self.current_item in self.mueble.muebles:
-            del self.mueble.muebles[self.current_item]
 
-        # Eliminar del canvas
-        self.canvas.delete(self.current_item)
-        self.label.config(text=f"Se eliminó: {self.current_item}")
-        self.current_item = None
     def handle_selection(self, event):
         self.selected_structure = self.combo_box.get()
 
@@ -90,11 +76,19 @@ class VentanaPrincipal:
         if self.selected_structure == 'ventana':
             self.elemento.ventana_count += 1
             text = f"ventana{self.elemento.ventana_count}"
-            self.elemento.dibujar_Ventana(x1, y1, 80, text, "")
+            self.elemento.dibujar_Ventana(x1, y1, 60, text, "")
+        elif self.selected_structure == 'ventana vertical':
+            self.elemento.ventana_count += 1
+            text = f"ventana{self.elemento.ventana_count}"
+            self.elemento.dibujar_Ventana_Vertical(x1, y1, 60, text, "")
         elif self.selected_structure == 'puerta':
             self.elemento.puerta_count += 1
             text = f"puerta{self.elemento.puerta_count}"
-            self.elemento.dibujar_Puerta(x1, y1, 70, text, "")
+            self.elemento.dibujar_Puerta(x1, y1, 60, text, "")
+        elif self.selected_structure == 'puerta vertical':
+            self.elemento.puerta_count += 1
+            text = f"puerta{self.elemento.puerta_count}"
+            self.elemento.dibujar_Puerta_Vertical(x1, y1, 60, text, "")
         elif self.selected_structure == 'cuarto':
             self.estructura.cuarto_count += 1
             text = f"cuarto{self.estructura.cuarto_count}"
@@ -127,20 +121,27 @@ class VentanaPrincipal:
             self.canvas.move(self.current_item, dx, dy)
             self.start_x = event.x
             self.start_y = event.y
+            if "cuarto" in self.current_item:
+                self.estructura.actualizar_posicion_cuarto(self.current_item, dx, dy)
 
+
+    def delete_structure(self):
+        if self.current_item:
+            self.canvas.delete(self.current_item)
+            self.label.config(text=f"Se eliminó: {self.current_item}")
+            self.current_item = None
 
     def process_command(self, event):
         command = self.command_entry.get().strip().lower()
-        parts = command.split()  # separa la cadena en palabras
+        parts = command.split()
         if len(parts) < 2:
             self.label.config(text="Comando no válido.")
             return
 
         action = parts[0]
-        nombre = parts[1]
+        tipo = parts[1]
 
         if action == "crear" and len(parts) == 3:
-            tipo = parts[1]
             nombre = parts[2]
             if tipo == "cuarto":
                 self.estructura.cuarto_count += 1
@@ -163,52 +164,43 @@ class VentanaPrincipal:
                 if tipo == "ventana":
                     self.elemento.ventana_count += 1
                     text = f"ventana{self.elemento.ventana_count}"
-                    self.elemento.dibujar_Ventana(x1 + 20, y1 + 20, 80, text, cuarto_id)
+                    self.elemento.dibujar_Ventana(x1 + 20, y1 + 20, 60, text, cuarto_id)
                 elif tipo == "puerta":
                     self.elemento.puerta_count += 1
                     text = f"puerta{self.elemento.puerta_count}"
-                    self.elemento.dibujar_Puerta(x1 + 20, y1 + 50, 70, text, cuarto_id)
+                    self.elemento.dibujar_Puerta(x1 + 20, y1 + 50, 60, text, cuarto_id)
             elif tipo in ["cama", "sofa", "lampara", "mesa", "silla", "inodoro", "horno"]:
-                cuarto_id = nombre
-                if cuarto_id not in self.estructura.cuartos:
-                    self.label.config(text="Cuarto no encontrado.")
-                    return
-                x1, y1, x2, y2 = self.estructura.cuartos[cuarto_id]
-                pos_x, pos_y = x1 + 20, y1 + 20
-                self.mueble.dibujar_mueble(tipo, pos_x, pos_y, cuarto_id)
-        elif action == "eliminar" and len(parts) == 2:
+                self.crear_mueble_comando(tipo, nombre)
+        elif action == "eliminar" and len(parts) == 3:
             nombre = parts[1]
-            if nombre in self.estructura.cuartos:
-                del self.estructura.cuartos[nombre]
-            elif nombre in self.elemento.elementos:
-                del self.elemento.elementos[nombre]
-            elif nombre in self.mueble.muebles:
-                del self.mueble.muebles[nombre]
-            self.canvas.delete(nombre)
-            self.label.config(text=f"Se eliminó: {nombre}")
+            tipo = parts[2]
+            et = f"{nombre} {tipo}"
+            self.canvas.delete(et)
+            self.label.config(text=f"Se eliminó: {et}")
         elif action == "mover":
             self.label.config(text="Funcionalidad de mover no implementada.")
         else:
             self.label.config(text="Acción no reconocida. Usa 'crear', 'eliminar' o 'mover'.")
+    def crear_mueble_comando(self, tipo, cuarto_id):
+        # Verificar si el cuarto existe en la estructura
+        if cuarto_id not in self.estructura.cuartos:
+            self.label.config(text="Cuarto no encontrado.")
+            return
 
-    def crear_mueble(self, tipo_mueble):
-        if tipo_mueble == "cama":
-            self.mueble.dibujar_cama(100, 100)
-        elif tipo_mueble == "sofa":
-            self.mueble.dibujar_sofa(100, 100)
-        elif tipo_mueble == "lampara":
-            self.mueble.dibujar_lampara(100, 100)
-        elif tipo_mueble == "mesa":
-            self.mueble.dibujar_mesa(100, 100)
-        elif tipo_mueble == "silla":
-            self.mueble.dibujar_silla(100, 100)
-        elif tipo_mueble == "inodoro":
-            self.mueble.dibujar_inodoro(100, 100)
-        elif tipo_mueble == "horno":
-            self.mueble.dibujar_horno(100, 100)
-            
+        # Obtener las coordenadas del cuarto
+        x1, y1, x2, y2 = self.estructura.cuartos[cuarto_id]
+
+        # Calcular el punto medio del cuarto para colocar el mueble en el centro
+        mx, my = (x2 - x1) // 2, (y2 - y1) // 2
+
+        # Dibujar el mueble en el punto calculado
+        etiqueta = self.mueble.dibujar_mueble(tipo, mx, my, cuarto_id)
+
+        if etiqueta:
+            self.label.config(text=f"{tipo.capitalize()} agregado con la etiqueta: {etiqueta}")
+        else:
+            self.label.config(text="Error al dibujar el mueble.")
 if __name__ == "__main__":
     root = tk.Tk()
     app = VentanaPrincipal(root)
     root.mainloop()
-

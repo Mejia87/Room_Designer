@@ -82,19 +82,12 @@ class Mueble:
         coordenadas_cuarto = self.estructura.obtener_coordenadas_cuarto(cuarto_id)
         if coordenadas_cuarto:
             x1_cuarto, y1_cuarto, x2_cuarto, y2_cuarto = coordenadas_cuarto
-            x1 = x1_cuarto + mx  # Use mx as the x-coordinate offset within the room
-            y1 = y1_cuarto + my  # Use my as the y-coordinate offset within the room
-
-            # Ensure the mueble stays within the room boundaries
-            if x1 < x1_cuarto: x1 = x1_cuarto
-            if y1 < y1_cuarto: y1 = y1_cuarto
-            if x1 > x2_cuarto: x1 = x2_cuarto
-            if y1 > y2_cuarto: y1 = y2_cuarto
-
+            x1 = x1_cuarto + mx  
+            y1 = y1_cuarto + my 
             partes = []
             if tipo == "cama":
                 x1 -= 25
-                y1 -= 40
+                y1 -= 90
                 partes = [self.canvas.create_rectangle(x1, y1, x1 + 50, y1 + 80, fill="white", outline="black", tags=(etiqueta, cuarto_id)),
                           self.canvas.create_rectangle(x1 + 10, y1, x1 + 40, y1 + 20, fill="lightgray", outline="black", tags=(etiqueta, cuarto_id))]
             elif tipo == "sofa":
@@ -107,7 +100,7 @@ class Mueble:
                           self.canvas.create_rectangle(x1 + 20, y1 + 20, x1 + 40, y1 + 80, fill="maroon", outline="black", tags=(etiqueta, cuarto_id))]
             elif tipo == "lampara":
                 x1 -= 15
-                y1 -= 45
+                y1 += 45
                 partes = [self.canvas.create_oval(x1, y1, x1 + 20, y1 + 20, fill="yellow", outline="black", tags=(etiqueta, cuarto_id)),
                           self.canvas.create_oval(x1 + 5, y1 + 5, x1 + 15, y1 + 15, fill="yellow", outline="black", tags=(etiqueta, cuarto_id))]
             elif tipo == "mesa":
