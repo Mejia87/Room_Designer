@@ -45,9 +45,14 @@ class VentanaPrincipal:
         command_entry_label = tk.Label(self.control_frame, text="Introduce un comando:")
         command_entry_label.pack(side=tk.LEFT, padx=5)
 
+        
+
         self.command_entry = tk.Entry(self.control_frame)
         self.command_entry.pack(side=tk.LEFT, padx=5)
         self.command_entry.bind("<Return>", self.process_command)
+
+        self.command_button = tk.Button(self.control_frame, text="Ejecutar comando", command=self.process_command)
+        self.command_button.pack(side=tk.RIGHT, padx=5)
 
         self.canvas = tk.Canvas(root, width=1200, height=800)
         self.canvas.pack(side=tk.BOTTOM)
@@ -56,7 +61,7 @@ class VentanaPrincipal:
         self.elemento = ElementoModule.Elemento(self.canvas)
         self.mueble = MuebleModule.Mueble(self.canvas)
         self.mueble.estructura = self.estructura
-
+    
         self.current_item = None
         self.start_x = 0
         self.start_y = 0
