@@ -8,18 +8,12 @@ class VentanaPrincipal:
     def __init__(self, root):
         self.root = root
         self.root.title("Diseñador de cuartos")
-        self.canvas = tk.Canvas(root, width=800, height=550)
-        self.canvas.pack()
 
-        self.estructura = EstructuraModule.Estructura(self.canvas)
-        self.elemento = ElementoModule.Elemento(self.canvas)
-        self.mueble = MuebleModule.Mueble(self.canvas)
-        self.mueble.estructura = self.estructura
-        
-        self.label = tk.Label(root, text="Selecciona una estructura")
-        self.label.pack(pady=10)
         self.control_frame = tk.Frame(root)
-        self.control_frame.pack(pady=10)
+        self.control_frame.pack(side=tk.TOP, pady=10)
+
+        self.label = tk.Label(root, text="Selecciona una estructura")
+        self.label.pack(side=tk.TOP, pady=10)
 
         opciones = ["cuarto", "ventana", "ventana vertical", "puerta", "puerta vertical"]
         self.seleccion = tk.StringVar()
@@ -54,6 +48,14 @@ class VentanaPrincipal:
         self.command_entry = tk.Entry(self.control_frame)
         self.command_entry.pack(side=tk.LEFT, padx=5)
         self.command_entry.bind("<Return>", self.process_command)
+
+        self.canvas = tk.Canvas(root, width=1200, height=800)
+        self.canvas.pack(side=tk.BOTTOM)
+
+        self.estructura = EstructuraModule.Estructura(self.canvas)
+        self.elemento = ElementoModule.Elemento(self.canvas)
+        self.mueble = MuebleModule.Mueble(self.canvas)
+        self.mueble.estructura = self.estructura
 
         self.current_item = None
         self.start_x = 0
