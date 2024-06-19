@@ -16,32 +16,30 @@ class Estructura:
         self.canvas.create_text((x1 + x2) // 2, (y1 + y2) // 2, text=text, tags=(text, text), fill='blue')
         self.cuartos[text] = (x1, y1, x2, y2)
 
+    def actualizar_cuarto(self, tag, dx, dy):
+        if tag in self.cuartos:
+            x1, y1, x2, y2 = self.cuartos[tag]
+            self.cuartos[tag] = (x1 + dx, y1 + dy, x2 + dx, y2 + dy)
 class Elemento:
     def __init__(self, canvas):
         self.canvas = canvas
         self.ventana_count = 0
         self.puerta_count = 0
-
+        self.elementos = {}
     def dibujar_Ventana(self, x1, y1, longitud, text, cuarto_id):
         self.canvas.create_rectangle(x1, y1, x1 + longitud, y1 + 10, fill="#EEEEEE", tags=(text, cuarto_id))
         self.canvas.create_line(x1, y1 + 4, x1 + longitud, y1 + 4, fill="black", tags=(text, cuarto_id))
         self.canvas.create_text(x1 + longitud // 2, y1 - 8, text=text, tags=(text, cuarto_id), fill='red')
-    
+        self.elementos[text] = cuarto_id
     def dibujar_Ventana_Vertical(self, x1, y1, longitud, text, cuarto_id):
         self.canvas.create_rectangle(x1, y1, x1 + 10, y1 + longitud, fill="#EEEEEE", tags=(text, cuarto_id))
         self.canvas.create_line(x1+4, y1, x1 + 4, y1 + longitud, fill="black", tags=(text, cuarto_id))
         y1 -= 5
         for i, char in enumerate(text):
             self.canvas.create_text(x1 + 15, y1 + i * 10, text=char, tags=(text, cuarto_id), fill='red')
+        self.elementos[text] = cuarto_id
     
     
-    
-    def dibujar_Ventana_Vertical(self, x1, y1, longitud, text, cuarto_id):
-        self.canvas.create_rectangle(x1, y1, x1 + 10, y1 + longitud, fill="#EEEEEE", tags=(text, cuarto_id))
-        self.canvas.create_line(x1+4, y1, x1 + 4, y1 + longitud, fill="black", tags=(text, cuarto_id))
-        y1 -= 5
-        for i, char in enumerate(text):
-            self.canvas.create_text(x1 + 15, y1 + i * 10, text=char, tags=(text, cuarto_id), fill='red')
     
     
     def dibujar_Puerta(self, x1, y1, longitud, text, cuarto_id):
@@ -50,15 +48,16 @@ class Elemento:
         self.canvas.create_arc(x1 - longitud, y1 + 5, x1 + 60, y1 + 110, start=90, extent=90, style=tk.PIESLICE, width=1, outline='black', tags=(text, cuarto_id))
         y1 -= 5
         for i, char in enumerate(text):
-            self.canvas.create_text(x1 + 25, y1 + i * 10, text=char, tags=(text, cuarto_id), fill='red')
-    
+            self.canvas.create_text(x1 + 15, y1 + i * 10, text=char, tags=(text, cuarto_id), fill='red')
+        self.elementos[text] = cuarto_id
+        
     def dibujar_Puerta_Vertical(self, x1, y1, longitud, text, cuarto_id):
         self.canvas.create_rectangle(x1, y1, x1+longitud, y1 + 10, fill="#A7E6FF", tags=(text, cuarto_id))
         self.canvas.create_line(x1 + longitud, y1 - longitud, x1+longitud, y1 , width="2", tags=(text, cuarto_id))
         self.canvas.create_arc(x1 +5, y1 - longitud, x1 + 110, y1 + 60, start=90, extent=90, style=tk.PIESLICE, width=1, outline='black', tags=(text, cuarto_id))
         y1 -= 5
         self.canvas.create_text(x1 + longitud // 2, y1 - 8, text=text, tags=(text, cuarto_id), fill='red')
-        
+        self.elementos[text] = cuarto_id
     
 
 class Mueble:
@@ -277,12 +276,14 @@ class VentanaPrincipal:
             dx = event.x - self.start_x
             dy = event.y - self.start_y
             self.canvas.move(self.current_item, dx, dy)
+            
             self.start_x = event.x
             self.start_y = event.y
-
+            self.estructura.actualizar_cuarto(self.current_item, dx, dy)
     def delete_structure(self):
         if self.current_item:
             self.canvas.delete(self.current_item)
+            self.estructura.cuartos.pop(self.current_item)
             self.label.config(text=f"Se eliminó: {self.current_item}")
             self.current_item = None
 
@@ -296,9 +297,9 @@ class VentanaPrincipal:
         action = parts[0]
         tipo = parts[1]
 
-        if action == "crear" and len(parts) >= 3:
-            nombre = parts[2]
-            if tipo == "cuarto":
+        if action == "crear" and len(parts) >= 2:
+            
+            if tipo in ["cocina","dormitorio","baño"]:
                 self.estructura.cuarto_count += 1
                 try:
                     ancho = int(self.entry_ancho.get())
@@ -309,9 +310,9 @@ class VentanaPrincipal:
                 x1, y1 = 50 + (self.estructura.cuarto_count - 1) * 200, 50
                 x2, y2 = x1 + ancho, y1 + largo
                 grosor = 10
-                self.estructura.dibujar_Cuarto(x1, y1, x2, y2, grosor, f"{nombre} {self.estructura.cuarto_count}"  )
+                self.estructura.dibujar_Cuarto(x1, y1, x2, y2, grosor, f"{tipo} {self.estructura.cuarto_count}"  )
             elif tipo in ["ventana", "puerta"]:
-                
+                nombre = parts[2]
                 cuarto_id = f"{nombre} {parts[3]}"
                 if cuarto_id not in self.estructura.cuartos:
                     self.label.config(text="Cuarto no encontrado.")
@@ -320,23 +321,26 @@ class VentanaPrincipal:
                 if tipo == "ventana":
                     self.elemento.ventana_count += 1
                     text = f"ventana {self.elemento.ventana_count}"
-                    self.elemento.dibujar_Ventana(x1 + 20, y1 + 20, 60, text, cuarto_id)
+                    self.elemento.dibujar_Ventana((x1+x2)//2-25, y1 , 60, text, cuarto_id)
                 elif tipo == "puerta":
                     self.elemento.puerta_count += 1
                     text = f"puerta {self.elemento.puerta_count}"
-                    self.elemento.dibujar_Puerta(x1 + 20, y1 + 50, 60, text, cuarto_id)
+                    
+                    self.elemento.dibujar_Puerta(x2, y1+10, 60, text, cuarto_id)
             elif tipo in ["cama", "sofa", "lampara", "mesa", "silla", "inodoro", "horno"]:
-                self.crear_mueble_comando(tipo, nombre)
+                self.crear_mueble_comando(tipo, f"{nombre} {parts[3]}")
         elif action == "eliminar" and len(parts) == 3:
             nombre = parts[1]
             tipo = parts[2]
             et = f"{nombre} {tipo}"
             self.canvas.delete(et)
+            self.estructura.cuartos.pop(et)
             self.label.config(text=f"Se eliminó: {et}")
-        elif action == "mover":
-            self.label.config(text="Funcionalidad de mover no implementada.")
+        elif action == "mover" and len(parts) == 4:
+            self.mover_elemento(parts)
         else:
             self.label.config(text="Acción no reconocida. Usa 'crear', 'eliminar' o 'mover'.")
+    
     def crear_mueble_comando(self, tipo, cuarto_id):
         if cuarto_id not in self.estructura.cuartos:
             self.label.config(text="Cuarto no encontrado.")
@@ -344,7 +348,74 @@ class VentanaPrincipal:
         x1, y1, x2, y2 = self.estructura.cuartos[cuarto_id]
         pos_x, pos_y = x1 + 20, y1 + 20
         self.mueble.dibujar_mueble(tipo, pos_x, pos_y, cuarto_id)
-        
+    
+    def mover_elemento(self,comandos):
+        if(comandos[1] == 'ventana'):
+            if(comandos[3] == 'arriba'):
+                et = f"{comandos[1]} {comandos[2]}"
+                self.canvas.delete(et)
+                cuarto_id = self.elemento.elementos[et]
+                self.label.config(text=f"id_cuarto obtenido: {et}")
+                x1, y1, x2, y2 = self.estructura.cuartos[cuarto_id]
+                self.elemento.elementos.pop(et)
+                self.elemento.dibujar_Ventana((x1+x2)//2-25, y1 , 60, et, cuarto_id)
+            elif(comandos[3] == 'abajo'):
+                et = f"{comandos[1]} {comandos[2]}"
+                self.canvas.delete(et)
+                cuarto_id = self.elemento.elementos[et]
+                self.label.config(text=f"id_cuarto obtenido: {et}")
+                x1, y1, x2, y2 = self.estructura.cuartos[cuarto_id]
+                self.elemento.elementos.pop(et)
+                self.elemento.dibujar_Ventana((x1+x2)//2-25, y2 , 60, et, cuarto_id)
+            elif(comandos[3] == 'derecha'):
+                et = f"{comandos[1]} {comandos[2]}"
+                self.canvas.delete(et)
+                cuarto_id = self.elemento.elementos[et]
+                self.label.config(text=f"id_cuarto obtenido: {cuarto_id}")
+                x1, y1, x2, y2 = self.estructura.cuartos[cuarto_id]
+                self.elemento.elementos.pop(et)
+                self.elemento.dibujar_Ventana_Vertical(x2, (y1+y2)//2-25 , 60, et, cuarto_id) 
+            elif(comandos[3] == 'izquierda' ):
+                et = f"{comandos[1]} {comandos[2]}"
+                self.canvas.delete(et)
+                cuarto_id = self.elemento.elementos[et]
+                self.label.config(text=f"id_cuarto obtenido: {cuarto_id}")
+                x1, y1, x2, y2 = self.estructura.cuartos[cuarto_id]
+                self.elemento.elementos.pop(et)
+                self.elemento.dibujar_Ventana_Vertical(x1, (y1+y2)//2-25 , 60, et, cuarto_id)
+        elif(comandos[1] == 'puerta'):
+            if(comandos[3] == 'arriba'):
+                et = f"{comandos[1]} {comandos[2]}"
+                self.canvas.delete(et)
+                cuarto_id = self.elemento.elementos[et]
+                self.label.config(text=f"id_cuarto obtenido: {et}")
+                x1, y1, x2, y2 = self.estructura.cuartos[cuarto_id]
+                self.elemento.elementos.pop(et)
+                self.elemento.dibujar_Puerta_Vertical(x1+10, y1 , 60, et, cuarto_id)
+            elif(comandos[3] == 'abajo'):
+                et = f"{comandos[1]} {comandos[2]}"
+                self.canvas.delete(et)
+                cuarto_id = self.elemento.elementos[et]
+                self.label.config(text=f"id_cuarto obtenido: {et}")
+                x1, y1, x2, y2 = self.estructura.cuartos[cuarto_id]
+                self.elemento.elementos.pop(et)
+                self.elemento.dibujar_Puerta_Vertical(x1+10, y2 , 60, et, cuarto_id)
+            elif(comandos[3] == 'derecha'):
+                et = f"{comandos[1]} {comandos[2]}"
+                self.canvas.delete(et)
+                cuarto_id = self.elemento.elementos[et]
+                self.label.config(text=f"id_cuarto obtenido: {cuarto_id}")
+                x1, y1, x2, y2 = self.estructura.cuartos[cuarto_id]
+                self.elemento.elementos.pop(et)
+                self.elemento.dibujar_Puerta(x2, y1+10 , 60, et, cuarto_id) 
+            elif(comandos[3] == 'izquierda' ):
+                et = f"{comandos[1]} {comandos[2]}"
+                self.canvas.delete(et)
+                cuarto_id = self.elemento.elementos[et]
+                self.label.config(text=f"id_cuarto obtenido: {cuarto_id}")
+                x1, y1, x2, y2 = self.estructura.cuartos[cuarto_id]
+                self.elemento.elementos.pop(et)
+                self.elemento.dibujar_Puerta(x1, y1+10 , 60, et, cuarto_id)  
 if __name__ == "__main__":
     root = tk.Tk()
     app = VentanaPrincipal(root)
