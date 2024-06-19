@@ -225,7 +225,7 @@ class VentanaPrincipal:
         x1, y1 = 300, 50
         x2, y2 = 460, 260
         grosor = 10
-        self.estructura.dibujar_Cuarto(x1, y1, x2, y2, grosor, "cuarto0")
+        self.estructura.dibujar_Cuarto(x1, y1, x2, y2, grosor, "cuarto 0")
 
     def handle_selection(self, event):
         self.selected_structure = self.combo_box.get()
@@ -234,23 +234,23 @@ class VentanaPrincipal:
         x1, y1 = event.x, event.y
         if self.selected_structure == 'ventana':
             self.elemento.ventana_count += 1
-            text = f"ventana{self.elemento.ventana_count}"
+            text = f"ventana {self.elemento.ventana_count}"
             self.elemento.dibujar_Ventana(x1, y1, 60, text, "")
         elif self.selected_structure == 'ventana vertical':
             self.elemento.ventana_count += 1
-            text = f"ventana{self.elemento.ventana_count}"
+            text = f"ventana {self.elemento.ventana_count}"
             self.elemento.dibujar_Ventana_Vertical(x1, y1, 60, text, "")
         elif self.selected_structure == 'puerta':
             self.elemento.puerta_count += 1
-            text = f"puerta{self.elemento.puerta_count}"
+            text = f"puerta {self.elemento.puerta_count}"
             self.elemento.dibujar_Puerta(x1, y1, 60, text, "")
         elif self.selected_structure == 'puerta vertical':
             self.elemento.puerta_count += 1
-            text = f"puerta{self.elemento.puerta_count}"
+            text = f"puerta {self.elemento.puerta_count}"
             self.elemento.dibujar_Puerta_Vertical(x1, y1, 60, text, "")
         elif self.selected_structure == 'cuarto':
             self.estructura.cuarto_count += 1
-            text = f"cuarto{self.estructura.cuarto_count}"
+            text = f"cuarto {self.estructura.cuarto_count}"
             try:
                 ancho = int(self.entry_ancho.get())
                 largo = int(self.entry_largo.get())
@@ -297,7 +297,7 @@ class VentanaPrincipal:
         action = parts[0]
         tipo = parts[1]
 
-        if action == "crear" and len(parts) == 3:
+        if action == "crear" and len(parts) >= 3:
             nombre = parts[2]
             if tipo == "cuarto":
                 self.estructura.cuarto_count += 1
@@ -310,23 +310,24 @@ class VentanaPrincipal:
                 x1, y1 = 50 + (self.estructura.cuarto_count - 1) * 200, 50
                 x2, y2 = x1 + ancho, y1 + largo
                 grosor = 10
-                self.estructura.dibujar_Cuarto(x1, y1, x2, y2, grosor, nombre)
+                self.estructura.dibujar_Cuarto(x1, y1, x2, y2, grosor, f"{nombre} {self.estructura.cuarto_count}"  )
             elif tipo in ["ventana", "puerta"]:
-                cuarto_id = nombre
+                
+                cuarto_id = f"{nombre} {parts[3]}"
                 if cuarto_id not in self.estructura.cuartos:
                     self.label.config(text="Cuarto no encontrado.")
                     return
                 x1, y1, x2, y2 = self.estructura.cuartos[cuarto_id]
                 if tipo == "ventana":
                     self.elemento.ventana_count += 1
-                    text = f"ventana{self.elemento.ventana_count}"
+                    text = f"ventana {self.elemento.ventana_count}"
                     self.elemento.dibujar_Ventana(x1 + 20, y1 + 20, 60, text, cuarto_id)
                 elif tipo == "puerta":
                     self.elemento.puerta_count += 1
-                    text = f"puerta{self.elemento.puerta_count}"
+                    text = f"puerta {self.elemento.puerta_count}"
                     self.elemento.dibujar_Puerta(x1 + 20, y1 + 50, 60, text, cuarto_id)
             elif tipo in ["cama", "sofa", "lampara", "mesa", "silla", "inodoro", "horno"]:
-                cuarto_id = nombre
+                cuarto_id = f"{nombre} {parts[3]}"
                 if cuarto_id not in self.estructura.cuartos:
                     self.label.config(text="Cuarto no encontrado.")
                     return
