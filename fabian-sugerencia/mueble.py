@@ -3,9 +3,62 @@ class Mueble:
         self.canvas = canvas
         self.mueble_ids = {"cama": 0, "sofa": 0, "lampara": 0, "mesa": 0, "silla": 0, "inodoro": 0, "horno": 0}
         self.muebles = {}
-        self.muebles_en_cuartos={}
+        self.estructura = None
+
+    def dibujar_mueble(self, tipo, mx, my, cuarto_id):
+        id = self.mueble_ids[tipo] = self.mueble_ids.get(tipo, 0) + 1
+        etiqueta = f"{tipo} {id}"
+        coordenadas_cuarto = self.estructura.obtener_coordenadas_cuarto(cuarto_id)
+        if coordenadas_cuarto:
+            x1_cuarto, y1_cuarto, x2_cuarto, y2_cuarto = coordenadas_cuarto
+            x1 = x1_cuarto + mx  
+            y1 = y1_cuarto + my  
 
 
+            partes = []
+            if tipo == "cama":
+                x1 -= 25
+                y1 -= 90
+                partes = [self.canvas.create_rectangle(x1, y1, x1 + 50, y1 + 80, fill="white", outline="black", tags=(etiqueta, cuarto_id)),
+                          self.canvas.create_rectangle(x1 + 10, y1, x1 + 40, y1 + 20, fill="lightgray", outline="black", tags=(etiqueta, cuarto_id))]
+            elif tipo == "sofa":
+                x1 -= 30
+                y1 -= 50
+                partes = [self.canvas.create_rectangle(x1, y1, x1 + 60, y1 + 20, fill="maroon", outline="black", tags=(etiqueta, cuarto_id)),
+                          self.canvas.create_rectangle(x1, y1 + 80, x1 + 60, y1 + 100, fill="maroon", outline="black", tags=(etiqueta, cuarto_id)),
+                          self.canvas.create_rectangle(x1, y1 + 20, x1 + 20, y1 + 80, fill="maroon", outline="black", tags=(etiqueta, cuarto_id)),
+                          self.canvas.create_rectangle(x1 + 40, y1 + 20, x1 + 60, y1 + 80, fill="maroon", outline="black", tags=(etiqueta, cuarto_id)),
+                          self.canvas.create_rectangle(x1 + 20, y1 + 20, x1 + 40, y1 + 80, fill="maroon", outline="black", tags=(etiqueta, cuarto_id))]
+            elif tipo == "lampara":
+                x1 -= 15
+                y1 += 45
+                partes = [self.canvas.create_oval(x1, y1, x1 + 20, y1 + 20, fill="yellow", outline="black", tags=(etiqueta, cuarto_id)),
+                          self.canvas.create_oval(x1 + 5, y1 + 5, x1 + 15, y1 + 15, fill="yellow", outline="black", tags=(etiqueta, cuarto_id))]
+            elif tipo == "mesa":
+                x1 -= 10
+                y1 -= 15
+                partes = [self.canvas.create_rectangle(x1, y1, x1 + 50, y1 + 30, fill="brown", outline="black", tags=(etiqueta, cuarto_id))]
+            elif tipo == "silla":
+                x1 -= 5
+                y1 -= 10
+                partes = [self.canvas.create_rectangle(x1, y1, x1 + 10, y1 + 30, fill="purple", outline="black", tags=(etiqueta, cuarto_id)),
+                          self.canvas.create_rectangle(x1, y1 + 20, x1 + 20, y1 + 30, fill="purple", outline="black", tags=(etiqueta, cuarto_id))]
+            elif tipo == "inodoro":
+                x1 -= 35
+                y1 -= 70
+                partes = [self.canvas.create_rectangle(x1, y1, x1 + 20, y1 + 30, fill="white", outline="black", tags=(etiqueta, cuarto_id)),
+                          self.canvas.create_oval(x1 - 5, y1 - 10, x1 + 25, y1 + 10, fill="white", outline="black", tags=(etiqueta, cuarto_id)),
+                          self.canvas.create_oval(x1 + 2, y1 - 7, x1 + 18, y1 + 7, fill="grey", outline="black", tags=(etiqueta, cuarto_id))]
+            elif tipo == "horno":
+                x1 -= 15
+                y1 -= 10
+                partes = [self.canvas.create_rectangle(x1, y1, x1 + 50, y1 + 50, fill="grey", outline="black", tags=(etiqueta, cuarto_id)),
+                          self.canvas.create_oval(x1 + 10, y1 + 10, x1 + 20, y1 + 20, fill="black", outline="black", tags=(etiqueta, cuarto_id)),
+                          self.canvas.create_oval(x1 + 30, y1 + 10, x1 + 40, y1 + 20, fill="black", outline="black", tags=(etiqueta, cuarto_id))]
+            self.muebles[etiqueta] = partes
+            return etiqueta
+        else:
+            return None    
     def dibujar_cama(self, x1, y1):
         id = self.mueble_ids["cama"] = self.mueble_ids.get("cama", 0) + 1
         etiqueta = f"cama {id}"
@@ -67,41 +120,3 @@ class Mueble:
         quemador2 = self.canvas.create_oval(x1 + 30, y1 + 10, x1 + 40, y1 + 20, fill="black", outline="black", tags=(etiqueta,))
         self.muebles[etiqueta] = [base, quemador1, quemador2]
         return etiqueta
-    
-    def dibujar_mueble(self, tipo, x1, y1, cuarto_id):
-        id = self.mueble_ids[tipo] = self.mueble_ids.get(tipo, 0) + 1
-        etiqueta = f"{tipo}{id}"
-        partes = []
-        if tipo == "cama":
-            partes = [self.canvas.create_rectangle(x1, y1, x1 + 50, y1 + 80, fill="white", outline="black", tags=(etiqueta,)),
-                    self.canvas.create_rectangle(x1 + 10, y1, x1 + 40, y1 + 20, fill="lightgray", outline="black", tags=(etiqueta,))]
-        elif tipo == "sofa":
-            partes = [self.canvas.create_rectangle(x1, y1, x1 + 60, y1 + 20, fill="maroon", outline="black", tags=(etiqueta,)),
-                    self.canvas.create_rectangle(x1, y1 + 80, x1 + 60, y1 + 100, fill="maroon", outline="black", tags=(etiqueta,)),
-                    self.canvas.create_rectangle(x1, y1 + 20, x1 + 20, y1 + 80, fill="maroon", outline="black", tags=(etiqueta,)),
-                    self.canvas.create_rectangle(x1 + 40, y1 + 20, x1 + 60, y1 + 80, fill="maroon", outline="black", tags=(etiqueta,)),
-                    self.canvas.create_rectangle(x1 + 20, y1 + 20, x1 + 40, y1 + 80, fill="maroon", outline="black", tags=(etiqueta,))]
-        elif tipo == "lampara":
-            partes = [self.canvas.create_oval(x1, y1, x1 + 20, y1 + 20, fill="yellow", outline="black", tags=(etiqueta,)),
-                    self.canvas.create_oval(x1 + 5, y1 + 5, x1 + 15, y1 + 15, fill="yellow", outline="black", tags=(etiqueta,))]
-        elif tipo == "mesa":
-            partes = [self.canvas.create_rectangle(x1, y1, x1 + 50, y1 + 30, fill="brown", outline="black", tags=(etiqueta,))]
-        elif tipo == "silla":
-            partes = [self.canvas.create_rectangle(x1, y1, x1 + 10, y1 + 30, fill="purple", outline="black", tags=(etiqueta,)),
-                    self.canvas.create_rectangle(x1, y1 + 20, x1 + 20, y1 + 30, fill="purple", outline="black", tags=(etiqueta,))]
-        elif tipo == "inodoro":
-            partes = [self.canvas.create_rectangle(x1, y1, x1 + 20, y1 + 30, fill="white", outline="black", tags=(etiqueta,)),
-                    self.canvas.create_oval(x1 - 5, y1 - 10, x1 + 25, y1 + 10, fill="white", outline="black", tags=(etiqueta,)),
-                    self.canvas.create_oval(x1 + 2, y1 - 7, x1 + 18, y1 + 7, fill="grey", outline="black", tags=(etiqueta,))]
-        elif tipo == "horno":
-            partes = [self.canvas.create_rectangle(x1, y1, x1 + 50, y1 + 50, fill="grey", outline="black", tags=(etiqueta,)),
-                    self.canvas.create_oval(x1 + 10, y1 + 10, x1 + 20, y1 + 20, fill="black", outline="black", tags=(etiqueta,)),
-                    self.canvas.create_oval(x1 + 30, y1 + 10, x1 + 40, y1 + 20, fill="black", outline="black", tags=(etiqueta,))]
-        self.muebles[etiqueta] = partes
-        if cuarto_id in self.muebles_en_cuartos:
-            self.muebles_en_cuartos[cuarto_id].append(etiqueta)
-        else:
-            self.muebles_en_cuartos[cuarto_id] = [etiqueta]
-        return etiqueta
-
-
