@@ -4,10 +4,10 @@ import numpy as np
 import sounddevice as sd
 import soundfile as sf
 from scipy.signal import medfilt
-from RV.Dir import RECORDED_RAW, RECORDED_PROC
+from iarv.RV.Dir import RECORDED_RAW, RECORDED_PROC
 
 
-def extraer_mfcc(ruta_audio, n_mfcc=13):
+def extraer_mfcc(ruta_audio, n_mfcc=40):
     y, sr = librosa.load(ruta_audio)
     mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)
     return mfccs.T  # Transponer para tener frames x n_mfcc

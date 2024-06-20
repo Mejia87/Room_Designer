@@ -1,7 +1,7 @@
-from RV.preprocessing.PreProcesamiento import grabar_audio, preprocesar_audio
-from RV.reconocimiento.HMM.Hmm import HMMdict
+from iarv.RV.preprocessing.PreProcesamiento import grabar_audio, preprocesar_audio
+from iarv.RV.reconocimiento.HMM.Hmm import HMMdict
 import pandas as pd
-from RV.Dir import CSV, REC_PROC
+from iarv.RV.Dir import CSV, REC_PROC
 
 
 def __entrenarModelo_dict(csv):
@@ -16,7 +16,7 @@ def __entrenarModelo_dict(csv):
     return hmmc
 
 
-def reconocer_voz(duracion=5, trhhold=20):
+def reconocer_voz(duracion=5, trhhold=30):
     modelo = __entrenarModelo_dict(CSV)
 
     #  Pre Procesamiento

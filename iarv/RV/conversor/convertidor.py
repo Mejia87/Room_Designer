@@ -2,12 +2,12 @@ import os
 import librosa
 import numpy as np
 import pandas as pd
-from RV.Dir import SAMPLES, CSV
+from iarv.RV.Dir import SAMPLES, CSV
 
 def extract_features(file_name):
     try:
         audio, sample_rate = librosa.load(file_name, res_type='kaiser_fast')
-        mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=13)
+        mfccs = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40)
         mfccs_scaled = np.mean(mfccs.T, axis=0)
         return mfccs_scaled
     except Exception as e:
