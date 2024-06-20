@@ -31,7 +31,10 @@ def preprocesar_audio(audio_path, threshold, hop_length=512):
         sf.write(audio_path, audio_sin_espacios, sr)
         data = extraer_mfcc(audio_path)
         mfccs.append(data)
+    if len(mfccs)>3:
+        mfccs = mfccs[:3]
     return mfccs
+
 
 
 def extraer_mfcc(ruta_audio, n_mfcc=40):

@@ -1,10 +1,12 @@
+import queue
+import threading
 import tkinter as tk
 from tkinter import ttk
 import Estructura as EstructuraModule
 import Elemento as ElementoModule
 import Mueble as MuebleModule
 from iarv.RV.RVHMM import reconocer_voz
-
+from iarv.RV.conversor import convertidor
 class VentanaPrincipal:
     def __init__(self, root):
         self.root = root
@@ -85,22 +87,35 @@ class VentanaPrincipal:
         x2, y2 = 460, 260
         grosor = 10
         self.estructura.dibujar_Cuarto(x1, y1, x2, y2, grosor, "cuarto 0")
-
-    def grabar(self):
+    #cola para la comunicación entre hilos
+        self.queue = queue.Queue()
+    
+    def toggle_grabar(self):
         self.grabando = not self.grabando
-        
-        if(self.grabando):
-            self.microphone_button.config(image=self.icon_microphone_on) 
+        if self.grabando:
+            self.microphone_button.config(image=self.icon_microphone_on)
             self.label.config(text="...GRABANDO...")
-            #llamar a reconocimiento de voz
+            threading.Thread(target=self.grabar).start()
+        else:
+            self.microphone_button.config(image=self.icon_microphone)
+            self.label.config(text="micrófono apagado")
+
+    def grabar(self):  
+          #llamar a reconocimiento de voz
             comandos = reconocer_voz()
             self.label.config(text=f"Se reconoció: {comandos}")
-            for comando in comandos:
-                self.process_voice_command(comando)
-        else :
-            self.microphone_button.config(image=self.icon_microphone)
-            self.label.config(text="microfono apagado")
+            self.root.after(100, self.process_queue)
     
+    def process_queue(self):
+        try:
+            while not self.queue.empty():
+                comandos = self.queue.get()
+                self.label.config(text=f"Se reconoció: {comandos}")
+                for comando in comandos:
+                    self.process_voice_command(comando)
+        except queue.Empty:
+            self.root.after(100, self.process_queue)
+
     def process_voice_command(self, comando):
         #procesar el comando
         parts = comando.split()
@@ -116,7 +131,7 @@ class VentanaPrincipal:
                 self.selected_structure = tipo
                 self.on_canvas_click(None)  # Simulamos un clic en el canvas
             elif tipo in ["cama", "sofa", "lampara", "mesa", "silla", "inodoro", "horno"]:
-                self.crear_mueble_comando(tipo, "cuarto 0")  # Aquí debes ajustar el cuarto id según el comando de voz
+                self.crear_mueble_comando(tipo, "cuarto 0")  
         elif action == "eliminar" and len(parts) == 3:
             nombre = parts[1]
             tipo = parts[2]

@@ -2,7 +2,7 @@ import os
 import librosa
 import numpy as np
 import pandas as pd
-from RV.Dir import SAMPLES, CSV
+from iarv.RV.Dir import SAMPLES, CSV
 
 def extract_features(file_name):
     try:

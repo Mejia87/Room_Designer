@@ -18,7 +18,7 @@ def __entrenarModelo_dict(csv):
 
 
 
-def reconocer_voz(duracion=5, trhhold=28):
+def reconocer_voz(duracion=5, trhhold=20):
     modelo = __entrenarModelo_dict(CSV)
 
     #  Pre Procesamiento
