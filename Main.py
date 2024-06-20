@@ -8,13 +8,25 @@ class VentanaPrincipal:
     def __init__(self, root):
         self.root = root
         self.root.title("Diseñador de cuartos")
-
-        self.control_frame = tk.Frame(root)
+        self.root.config(bg='#A0937D')
+        self.control_frame = tk.Frame(root,bg='#A0937D')
         self.control_frame.pack(side=tk.TOP, pady=10)
 
-        self.label = tk.Label(root, text="Selecciona una estructura")
+        self.label = tk.Label(root, text="Selecciona una estructura",bg='#A0937D',fg='white')
+        self.label.config(font=('Helvetica', 15, 'bold'))
         self.label.pack(side=tk.TOP, pady=10)
 
+        #agregar boton de microfono
+        self.icon_microphone = tk.PhotoImage(file='microphone_off.png')
+        self.icon_microphone_on = tk.PhotoImage(file='microphone_on.png')
+        self.microphone_button = tk.Button(self.control_frame, image=self.icon_microphone, command=self.grabar, bd=0,bg='#A0937D')
+        self.microphone_button.pack(side=tk.RIGHT, padx=5)
+        self.grabando = False
+        
+        self.label_elemento = tk.Label(self.control_frame, text="Elemento:",bg='#A0937D',fg='white')
+        self.label_elemento.config(font=('Helvetica', 15, 'bold'))
+        self.label_elemento.pack(side=tk.LEFT, padx=5)
+        
         opciones = ["cuarto", "ventana", "ventana vertical", "puerta", "puerta vertical"]
         self.seleccion = tk.StringVar()
 
@@ -22,35 +34,38 @@ class VentanaPrincipal:
         self.combo_box['values'] = opciones
         self.combo_box.pack(side=tk.LEFT, padx=5)
         self.combo_box.bind("<<ComboboxSelected>>", self.handle_selection)
+        
+        self.label_ancho = tk.Label(self.control_frame, text="Ancho:",bg='#A0937D',fg='white')
+        self.label_ancho.config(font=('Helvetica', 15, 'bold'))
+        self.entry_ancho = tk.Entry(self.control_frame, width=6)
+        
 
+        self.label_largo = tk.Label(self.control_frame, text="Largo:",bg='#A0937D',fg='white')
+        self.label_largo.config(font=('Helvetica', 15, 'bold'))
+        self.entry_largo = tk.Entry(self.control_frame, width=6)
+        
+        self.label_mueble = tk.Label(self.control_frame, text="mueble:",bg='#A0937D',fg='white')
+        self.label_mueble.config(font=('Helvetica', 15, 'bold'))
+        self.label_mueble.pack(side=tk.LEFT, padx=5)
         mueble_combobox = ttk.Combobox(self.control_frame, values=["cama", "sofa","lampara","mesa","silla","inodoro","horno"])
         mueble_combobox.pack(side=tk.LEFT, padx=5)
         mueble_combobox.bind("<<ComboboxSelected>>", lambda event: self.crear_mueble(mueble_combobox.get()))
         
-        label_ancho = tk.Label(self.control_frame, text="Ancho:")
-        label_ancho.pack(side=tk.LEFT, padx=5)
-
-        self.entry_ancho = tk.Entry(self.control_frame)
-        self.entry_ancho.pack(side=tk.LEFT, padx=5)
-
-        label_largo = tk.Label(self.control_frame, text="Largo:")
-        label_largo.pack(side=tk.LEFT, padx=5)
-
-        self.entry_largo = tk.Entry(self.control_frame)
-        self.entry_largo.pack(side=tk.LEFT, padx=5)
+        
 
         delete_button = tk.Button(self.control_frame, text="Eliminar", command=self.delete_structure)
         delete_button.pack(side=tk.LEFT, padx=5)
 
-        command_entry_label = tk.Label(self.control_frame, text="Introduce un comando:")
+        command_entry_label = tk.Label(self.control_frame, text="Introduce un comando:",bg='#A0937D',fg='white')
+        command_entry_label.config(font=('Helvetica', 15, 'bold'))
         command_entry_label.pack(side=tk.LEFT, padx=5)
 
-        self.command_entry = tk.Entry(self.control_frame)
+        self.command_entry = tk.Entry(self.control_frame, width=25)
         self.command_entry.pack(side=tk.LEFT, padx=5)
         self.command_entry.bind("<Return>", self.process_command)
 
-        self.canvas = tk.Canvas(root, width=1200, height=800)
-        self.canvas.pack(side=tk.BOTTOM)
+        self.canvas = tk.Canvas(root, bg = '#F6E6CB')
+        self.canvas.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
 
         self.estructura = EstructuraModule.Estructura(self.canvas)
         self.elemento = ElementoModule.Elemento(self.canvas)
@@ -70,10 +85,31 @@ class VentanaPrincipal:
         grosor = 10
         self.estructura.dibujar_Cuarto(x1, y1, x2, y2, grosor, "cuarto 0")
 
-
+    def grabar(self):
+        self.grabando = not self.grabando
+        
+        if(self.grabando):
+            self.microphone_button.config(image=self.icon_microphone_on) 
+            self.label.config(text="...GRABANDO...")
+        else :
+            self.microphone_button.config(image=self.icon_microphone)
+            self.label.config(text="microfono apagado")
+    
     def handle_selection(self, event):
         self.selected_structure = self.combo_box.get()
-
+        
+        
+        if self.selected_structure == "cuarto":
+            self.label_ancho.pack(side=tk.LEFT, padx=5)
+            self.entry_ancho.pack(side=tk.LEFT, padx=5)
+            self.label_largo.pack(side=tk.LEFT, padx=5)
+            self.entry_largo.pack(side=tk.LEFT, padx=5)
+        else:
+            self.label_ancho.pack_forget()
+            self.entry_ancho.pack_forget()
+            self.label_largo.pack_forget()
+            self.entry_largo.pack_forget()
+            
     def on_canvas_click(self, event):
         x1, y1 = event.x, event.y
         if self.selected_structure == 'ventana':
