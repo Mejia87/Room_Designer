@@ -4,7 +4,7 @@ import numpy as np
 import sounddevice as sd
 import soundfile as sf
 from scipy.signal import medfilt
-from RV.Dir import REC_RAW, REC_PROC
+from iarv.RV.Dir import REC_RAW, REC_PROC
 
 
 def preprocesar_audio(audio_path, threshold, hop_length=512):
@@ -29,13 +29,15 @@ def preprocesar_audio(audio_path, threshold, hop_length=512):
         audio_sin_espacios.extend(audio_filtrado[inicio:fin])
         audio_sin_espacios = np.array(audio_sin_espacios)
         sf.write(audio_path, audio_sin_espacios, sr)
-        mfccs.append(extraer_mfcc(audio_path))
+        data = extraer_mfcc(audio_path)
+        mfccs.append(data)
     return mfccs
 
 
-def extraer_mfcc(ruta_audio, n_mfcc=13):
+def extraer_mfcc(ruta_audio, n_mfcc=40):
     y, sr = librosa.load(ruta_audio)
     mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)
+    #mfccs_t = np.mean(mfccs.T, axis=0)
     return mfccs.T  # Transponer para tener frames x n_mfcc
 
 
