@@ -1,4 +1,5 @@
 from RV.RVHMM import reconocer_voz
+#from iarv.RV.RVHMM import reconocer_voz
 from RV.conversor import convertidor
 #from RV.grabado import grabador
 
@@ -22,7 +23,7 @@ from RV.conversor import convertidor
 def main():
     texto = reconocer_voz()
     print(f"Se reconocío : {texto}")
-    print("grabacion finalizada")
+  #  print("grabacion finalizada")
 
 
 

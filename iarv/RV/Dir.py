@@ -1,4 +1,4 @@
-ROOT = ""
+ROOT = "iarv/"
 
 SAMPLES = f"{ ROOT }RV/samples"
 RECORDED = f"{ ROOT }RV/grabado"

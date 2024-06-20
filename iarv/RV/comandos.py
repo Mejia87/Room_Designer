@@ -1,6 +1,6 @@
 
 comandos = {"añadir": "objetosuperior",
-            "quitar": {"objetosuperior": "numero", "objetoinferior": "numero"},
+            "eliminar": {"objetosuperior": "numero", "objetoinferior": "numero"},
             "crear": {"objetoinferior": {"objetosuperior":"numero"}},
             "mover": {"objetoinferior": {"numero": "direccion"}, "objetosuperior": {"numero": "direccion"}}
             }

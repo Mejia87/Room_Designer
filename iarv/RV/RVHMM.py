@@ -29,8 +29,11 @@ def reconocer_voz(duracion=5, trhhold=28):
     tipo = ["accion"]
     iterador = IteradorComando()
     for mfccs in mfccs_rec:
+        
         if not tipo is None:
             texto, nt = modelo.reconocer_palabra(mfccs, tipo)
             tipo = iterador.iterarComando(texto if tipo[0] == "accion" else nt)
             palabras.append(texto)
+    print("fin reconocimiento.")        
     return palabras
+

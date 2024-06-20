@@ -3,6 +3,7 @@ from tkinter import ttk
 import Estructura as EstructuraModule
 import Elemento as ElementoModule
 import Mueble as MuebleModule
+from iarv.RV.RVHMM import reconocer_voz
 
 class VentanaPrincipal:
     def __init__(self, root):
@@ -91,10 +92,43 @@ class VentanaPrincipal:
         if(self.grabando):
             self.microphone_button.config(image=self.icon_microphone_on) 
             self.label.config(text="...GRABANDO...")
+            #llamar a reconocimiento de voz
+            comandos = reconocer_voz()
+            self.label.config(text=f"Se reconoció: {comandos}")
+            for comando in comandos:
+                self.process_voice_command(comando)
         else :
             self.microphone_button.config(image=self.icon_microphone)
             self.label.config(text="microfono apagado")
     
+    def process_voice_command(self, comando):
+        #procesar el comando
+        parts = comando.split()
+        if len(parts) < 2:
+            self.label.config(text="Comando de voz no válido.")
+            return
+
+        action = parts[0]
+        tipo = parts[1]
+
+        if action == "crear" and len(parts) >= 2:
+            if tipo in ["cuarto", "ventana", "ventana vertical", "puerta", "puerta vertical"]:
+                self.selected_structure = tipo
+                self.on_canvas_click(None)  # Simulamos un clic en el canvas
+            elif tipo in ["cama", "sofa", "lampara", "mesa", "silla", "inodoro", "horno"]:
+                self.crear_mueble_comando(tipo, "cuarto 0")  # Aquí debes ajustar el cuarto id según el comando de voz
+        elif action == "eliminar" and len(parts) == 3:
+            nombre = parts[1]
+            tipo = parts[2]
+            et = f"{nombre} {tipo}"
+            self.canvas.delete(et)
+            self.estructura.cuartos.pop(et)
+            self.label.config(text=f"Se eliminó: {et}")
+        elif action == "mover" and len(parts) == 4:
+            self.mover_elemento(parts)
+        else:
+            self.label.config(text="Acción no reconocida. Usa 'crear', 'eliminar' o 'mover'.")
+
     def handle_selection(self, event):
         self.selected_structure = self.combo_box.get()
         
