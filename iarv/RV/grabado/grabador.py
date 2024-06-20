@@ -13,7 +13,7 @@ def extraer_mfcc(ruta_audio, n_mfcc=40):
     return mfccs.T  # Transponer para tener frames x n_mfcc
 
 
-def preprocesar_audio(audio_path, threshold=16, hop_length=512):
+def preprocesar_audio(audio_path, threshold=20, hop_length=512):
     audio, sr = librosa.load(audio_path)
 
     audio = librosa.to_mono(audio)
