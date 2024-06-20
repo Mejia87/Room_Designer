@@ -20,8 +20,8 @@ from RV.grabado import grabador
 
 
 def main():
- #  texto = reconocer_voz()
- #  print(f"Se reconocío : {texto}")
+#   texto = reconocer_voz()
+#   print(f"Se reconocío : {texto}")
     print("grabacion finalizada")
 
 
